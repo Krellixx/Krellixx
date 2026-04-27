@@ -1,4 +1,4 @@
-# Krellixx: 100-Dimension Profile Experience
+# Krellixx: Solar Descent Experience
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&height=220&text=Krellixx%20Universe&fontAlign=50&fontAlignY=35&color=0:10002B,25:240046,50:5A189A,75:9D4EDD,100:C77DFF&fontColor=ffffff&animation=twinkling" alt="Krellixx Universe Banner" />
@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>This is not a profile. This is a portal.</b><br/>
-  Enter a game-like journey across <b>100 unique dimensions</b> with shifting colors, styles, and typography.
+  Enter a cinematic full-screen journey from deep space to Earth.
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/badge/STEP%201-Follow%20@Krellixx-ff2e63?style=for-the-badge&logo=github" alt="Follow Krellixx"/>
   </a>
   <a href="https://krellixx.github.io/Krellixx/">
-    <img src="https://img.shields.io/badge/STEP%202-Enter%20the%20100D%20Game-08d9d6?style=for-the-badge&logo=vercel" alt="Enter 100D Game"/>
+    <img src="https://img.shields.io/badge/STEP%202-Launch%20Solar%20Descent-08d9d6?style=for-the-badge&logo=vercel" alt="Launch Solar Descent"/>
   </a>
 </p>
 
@@ -22,17 +22,16 @@
 
 ## What happens inside?
 
-- Phase 1: "Follow to unlock" gate.
-- Phase 2: Guess-a-number puzzle + mind-calculation illusion.
-- Phase 3: Hyper-speed number stream from `1` to `100`.
-- Phase 4: Stop at any number and jump into that exact dimension.
-- Phase 5: Every dimension has a different color mood, font stack, and styling treatment.
+- Phase 1: Tiny orange star in deep black space.
+- Phase 2: Automatic cinematic zoom into the solar system.
+- Phase 3: Earth lock-on with realistic 3D globe rendering.
+- Phase 4: Drone-style HUD flyover across major world cities.
 
 ---
 
 ## Launch The Experience
 
-Click here: **[Enter The 100-Dimension Portal](https://krellixx.github.io/Krellixx/)**  
+Click here: **[Launch Solar Descent](https://krellixx.github.io/Krellixx/)**  
 If the link is not live yet, enable GitHub Pages in repository settings:
 
 1. Go to `Settings` -> `Pages`.

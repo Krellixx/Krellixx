@@ -1,482 +1,270 @@
-const panels = {
-  intro: document.getElementById("introPanel"),
-  guess: document.getElementById("guessPanel"),
-  calc: document.getElementById("calcPanel"),
-  spinner: document.getElementById("spinnerPanel"),
-  dimension: document.getElementById("dimensionPanel")
-};
-
-const followLink = document.getElementById("followLink");
-const followStatus = document.getElementById("followStatus");
-const readyBtn = document.getElementById("readyBtn");
-const guessInput = document.getElementById("guessInput");
-const guessFeedback = document.getElementById("guessFeedback");
-const toSpinnerBtn = document.getElementById("toSpinnerBtn");
-const stopBtn = document.getElementById("stopBtn");
-const againBtn = document.getElementById("againBtn");
-const streamNumberEl = document.getElementById("streamNumber");
-const spinnerHint = document.getElementById("spinnerHint");
-
-const dimensionEyebrow = document.getElementById("dimensionEyebrow");
-const dimensionTitle = document.getElementById("dimensionTitle");
-const dimensionText = document.getElementById("dimensionText");
-const dimensionMeta = document.getElementById("dimensionMeta");
-const cityCanvas = document.getElementById("cityCanvas");
-const cityTitle = document.getElementById("cityTitle");
-const cityButtons = Array.from(document.querySelectorAll(".city-btn"));
-
+const canvas = document.getElementById("spaceCanvas");
+const phaseLabel = document.getElementById("phaseLabel");
+const cityLabel = document.getElementById("cityLabel");
+const timerLabel = document.getElementById("timerLabel");
+const hud = document.getElementById("hud");
 const body = document.body;
 
-let streamInterval = null;
-let streamNumber = 1;
-let isStopped = false;
-let guessedNumber = 8;
-let followIntent = false;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-const fontStacks = [
-  "Inter, system-ui, sans-serif",
-  "Orbitron, sans-serif",
-  "Bebas Neue, sans-serif",
-  "Cinzel, serif",
-  "Playfair Display, serif",
-  "Fira Code, monospace",
-  "Rajdhani, sans-serif",
-  "Press Start 2P, monospace",
-  "Audiowide, sans-serif",
-  "Russo One, sans-serif",
-  "Space Grotesk, sans-serif",
-  "JetBrains Mono, monospace",
-  "Monoton, display",
-  "Righteous, sans-serif",
-  "Oswald, sans-serif",
-  "Lobster, cursive",
-  "Great Vibes, cursive",
-  "Teko, sans-serif",
-  "Major Mono Display, monospace",
-  "Creepster, display",
-  "Tilt Neon, sans-serif",
-  "Rubik Glitch, display",
-  "Bangers, display",
-  "Pacifico, cursive",
-  "Unbounded, sans-serif",
-  "Exo 2, sans-serif",
-  "Share Tech Mono, monospace"
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 12000);
+camera.position.set(0, 0, 2200);
+
+const ambient = new THREE.AmbientLight(0xffffff, 0.16);
+scene.add(ambient);
+const sunLight = new THREE.PointLight(0xffcc88, 2.4, 9000, 2);
+scene.add(sunLight);
+
+const textureLoader = new THREE.TextureLoader();
+const earthTexture = textureLoader.load("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg");
+const earthBump = textureLoader.load("https://threejs.org/examples/textures/planets/earth_bump_2048.jpg");
+const earthSpec = textureLoader.load("https://threejs.org/examples/textures/planets/earth_specular_2048.jpg");
+const cloudTexture = textureLoader.load("https://threejs.org/examples/textures/planets/earth_clouds_1024.png");
+
+const starGeo = new THREE.BufferGeometry();
+const starCount = 3500;
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount; i += 1) {
+  const r = 2600 + Math.random() * 6500;
+  const th = Math.random() * Math.PI * 2;
+  const ph = Math.acos(2 * Math.random() - 1);
+  starPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+  starPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
+  starPos[i * 3 + 2] = r * Math.cos(ph);
+}
+starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+const stars = new THREE.Points(
+  starGeo,
+  new THREE.PointsMaterial({ color: 0xffffff, size: 4, sizeAttenuation: true, transparent: true, opacity: 0.85 })
+);
+scene.add(stars);
+
+const solarGroup = new THREE.Group();
+scene.add(solarGroup);
+
+const sun = new THREE.Mesh(
+  new THREE.SphereGeometry(80, 64, 64),
+  new THREE.MeshStandardMaterial({ color: 0xff9d42, emissive: 0xff5c00, emissiveIntensity: 1.4 })
+);
+solarGroup.add(sun);
+sunLight.position.copy(sun.position);
+
+const planetDefs = [
+  { name: "Mercury", radius: 5, orbit: 120, speed: 0.0105, color: 0xb4b4b4 },
+  { name: "Venus", radius: 10, orbit: 170, speed: 0.0076, color: 0xd9af6b },
+  { name: "Earth", radius: 12, orbit: 235, speed: 0.0062, color: 0x5a8cff },
+  { name: "Mars", radius: 7, orbit: 300, speed: 0.0051, color: 0xd57254 },
+  { name: "Jupiter", radius: 32, orbit: 430, speed: 0.0028, color: 0xc7a781 },
+  { name: "Saturn", radius: 28, orbit: 560, speed: 0.0021, color: 0xe3c98a },
+  { name: "Uranus", radius: 19, orbit: 680, speed: 0.0015, color: 0x9ee9ea },
+  { name: "Neptune", radius: 18, orbit: 790, speed: 0.0012, color: 0x5b76db }
 ];
 
-const moods = [
-  "Neon Storm",
-  "Cosmic Ice",
-  "Inferno Bloom",
-  "Void Pulse",
-  "Solar Punk",
-  "Quantum Garden",
-  "Retro Glitch",
-  "Crystal Noise",
-  "Midnight Haze",
-  "Laser Temple"
-];
+const planets = [];
+let earth = null;
+let cloudLayer = null;
 
-const cityNames = [
-  "Tokyo", "New York", "Paris", "London", "Dubai", "Mumbai", "Seoul", "Singapore", "Barcelona", "Berlin",
-  "Los Angeles", "Sydney", "Rome", "Istanbul", "Bangkok", "Sao Paulo", "Toronto", "Shanghai", "Hong Kong", "Cairo",
-  "Moscow", "Cape Town", "Mexico City", "San Francisco", "Amsterdam", "Prague", "Lisbon", "Vienna", "Budapest", "Athens",
-  "Jakarta", "Manila", "Nairobi", "Lagos", "Accra", "Riyadh", "Doha", "Kuala Lumpur", "Auckland", "Melbourne",
-  "Brussels", "Stockholm", "Oslo", "Copenhagen", "Helsinki", "Dublin", "Edinburgh", "Warsaw", "Krakow", "Zurich",
-  "Geneva", "Munich", "Frankfurt", "Venice", "Florence", "Naples", "Milan", "Valencia", "Madrid", "Seville",
-  "Vancouver", "Montreal", "Chicago", "Seattle", "Boston", "Austin", "Atlanta", "Miami", "Las Vegas", "San Diego",
-  "Lima", "Bogota", "Buenos Aires", "Santiago", "Quito", "Reykjavik", "Tallinn", "Riga", "Vilnius", "Bucharest",
-  "Belgrade", "Sofia", "Zagreb", "Ljubljana", "Bratislava", "Kyoto", "Osaka", "Busan", "Hanoi", "Ho Chi Minh City",
-  "Phnom Penh", "Kathmandu", "Colombo", "Karachi", "Lahore", "Dhaka", "Chennai", "Bengaluru", "Hyderabad", "Pune"
-];
-
-// Three.js state for procedural city models.
-let renderer;
-let scene;
-let camera;
-let controls;
-let cityGroup;
-let cityAnimationHandle;
-let currentCityVariant = 0;
-let currentDimension = 1;
-
-function showPanel(name) {
-  Object.values(panels).forEach((panel) => panel.classList.remove("active"));
-  panels[name].classList.add("active");
-}
-
-function colorSetForDimension(n) {
-  const hue = (n * 17 + 37) % 360;
-  const hue2 = (hue + 58 + (n % 19)) % 360;
-  const hue3 = (hue + 180) % 360;
-  return {
-    bgA: `hsl(${hue} 85% 10%)`,
-    bgB: `hsl(${hue2} 75% 18%)`,
-    accent: `hsl(${hue} 92% 62%)`,
-    accent2: `hsl(${hue3} 90% 66%)`
-  };
-}
-
-function makeDimensionData(n) {
-  const font = fontStacks[(n - 1) % fontStacks.length];
-  const weight = 300 + ((n * 37) % 700);
-  const size = 0.95 + ((n % 8) * 0.085);
-  const spacing = ((n % 11) - 5) * 0.02;
-  const border = `${1 + (n % 5)}px`;
-  const mood = moods[(n - 1) % moods.length];
-  const colors = colorSetForDimension(n);
-
-  return {
-    number: n,
-    title: `Dimension ${n.toString().padStart(3, "0")}`,
-    mood,
-    font,
-    size: `${size.toFixed(2)}rem`,
-    spacing: `${spacing.toFixed(2)}em`,
-    weight,
-    border,
-    colors
-  };
-}
-
-function applyDimension(n) {
-  currentDimension = n;
-  const d = makeDimensionData(n);
-
-  body.style.setProperty("--bg", d.colors.bgA);
-  body.style.setProperty("--bg-soft", d.colors.bgB);
-  body.style.setProperty("--accent", d.colors.accent);
-  body.style.setProperty("--accent-2", d.colors.accent2);
-  body.style.fontFamily = d.font;
-  body.style.fontWeight = `${Math.min(900, Math.max(300, d.weight))}`;
-  body.style.letterSpacing = d.spacing;
-
-  const dynamicCss = `
-    radial-gradient(circle at ${15 + (n % 65)}% ${15 + ((n * 9) % 70)}%, ${d.colors.bgB}, ${d.colors.bgA})
-  `;
-  body.style.background = dynamicCss;
-
-  const panel = panels.dimension;
-  panel.style.borderWidth = d.border;
-  panel.style.borderStyle = n % 2 === 0 ? "solid" : "dashed";
-  panel.style.transform = `rotate(${((n % 9) - 4) * 0.1}deg)`;
-
-  dimensionEyebrow.textContent = `${d.mood} | Universe Signature #${n}`;
-  dimensionTitle.textContent = d.title;
-  dimensionTitle.style.fontSize = `clamp(1.8rem, ${2 + ((n % 13) * 0.22)}vw, 4.3rem)`;
-  dimensionText.textContent =
-    `You forced reality into Dimension ${n}. ` +
-    `Tone, typography and cosmic rhythm are remapped for this world.`;
-  dimensionText.style.fontSize = d.size;
-
-  dimensionMeta.innerHTML = `
-    <div class="meta-item"><b>Mood</b>${d.mood}</div>
-    <div class="meta-item"><b>Font Stack</b>${d.font}</div>
-    <div class="meta-item"><b>Letter Spacing</b>${d.spacing}</div>
-    <div class="meta-item"><b>Font Weight</b>${d.weight}</div>
-    <div class="meta-item"><b>Accent</b>${d.colors.accent}</div>
-    <div class="meta-item"><b>Secondary Accent</b>${d.colors.accent2}</div>
-  `;
-
-  buildCityModel(n, currentCityVariant);
-}
-
-function startStream() {
-  isStopped = false;
-  streamNumber = 1;
-  streamNumberEl.textContent = `${streamNumber}`;
-  spinnerHint.textContent = "Press stop at the perfect moment.";
-  stopBtn.disabled = false;
-
-  if (streamInterval) {
-    clearInterval(streamInterval);
-  }
-
-  // High-speed ticker gives the "reflex challenge" feel.
-  streamInterval = setInterval(() => {
-    streamNumber += 1;
-    if (streamNumber > 100) {
-      streamNumber = 1;
-    }
-    streamNumberEl.textContent = `${streamNumber}`;
-  }, 35);
-}
-
-function stopStream() {
-  if (isStopped) {
-    return;
-  }
-  isStopped = true;
-  stopBtn.disabled = true;
-  clearInterval(streamInterval);
-  streamInterval = null;
-
-  const chosen = streamNumber;
-  const matched = chosen === guessedNumber;
-  spinnerHint.textContent = matched
-    ? `Perfect stop at ${chosen}. Loading your exact dimension...`
-    : `You stopped at ${chosen}, but your locked guess is ${guessedNumber}. Redirecting to your guessed dimension...`;
-  setTimeout(() => {
-    applyDimension(guessedNumber);
-    showPanel("dimension");
-  }, 680);
-}
-
-followLink.addEventListener("click", () => {
-  followIntent = true;
-  followStatus.textContent = "Follow page opened. Return to this tab to auto-enter.";
-});
-
-window.addEventListener("focus", () => {
-  if (!followIntent) return;
-  followStatus.textContent = "Welcome back. Portal unlocked.";
-  showPanel("guess");
-  followIntent = false;
-});
-
-readyBtn.addEventListener("click", () => {
-  const parsed = Number.parseInt(guessInput.value, 10);
-  if (Number.isNaN(parsed) || parsed < 1 || parsed > 100) {
-    guessFeedback.textContent = "Enter a valid number from 1 to 100.";
-    guessInput.focus();
-    return;
-  }
-  guessedNumber = parsed;
-  guessFeedback.textContent = `Locked guess: ${guessedNumber}`;
-  showPanel("calc");
-});
-
-toSpinnerBtn.addEventListener("click", () => {
-  showPanel("spinner");
-  startStream();
-});
-stopBtn.addEventListener("click", stopStream);
-againBtn.addEventListener("click", () => {
-  guessInput.value = `${guessedNumber}`;
-  showPanel("intro");
-});
-
-cityButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const variant = Number.parseInt(button.dataset.variant || "0", 10);
-    currentCityVariant = Number.isNaN(variant) ? 0 : variant;
-    buildCityModel(currentDimension, currentCityVariant);
-  });
-});
-
-// Default landing style.
-applyDimension(1);
-showPanel("intro");
-
-// Background particle shimmer.
-const canvas = document.getElementById("bgCanvas");
-const ctx = canvas.getContext("2d");
-const particles = [];
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-function randomParticle() {
-  return {
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 1.8 + 0.4,
-    vx: (Math.random() - 0.5) * 0.4,
-    vy: (Math.random() - 0.5) * 0.4,
-    a: Math.random() * 0.6 + 0.2
-  };
-}
-
-function refillParticles() {
-  particles.length = 0;
-  const count = Math.min(220, Math.floor((canvas.width * canvas.height) / 9200));
-  for (let i = 0; i < count; i += 1) {
-    particles.push(randomParticle());
-  }
-}
-
-function drawParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const accent = getComputedStyle(body).getPropertyValue("--accent").trim();
-  ctx.fillStyle = accent || "#08d9d6";
-  particles.forEach((p) => {
-    p.x += p.vx;
-    p.y += p.vy;
-    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-    ctx.globalAlpha = p.a;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
-  requestAnimationFrame(drawParticles);
-}
-
-window.addEventListener("resize", () => {
-  resizeCanvas();
-  refillParticles();
-});
-
-resizeCanvas();
-refillParticles();
-drawParticles();
-
-function initThreeIfNeeded() {
-  if (renderer) {
-    return;
-  }
-  renderer = new THREE.WebGLRenderer({
-    canvas: cityCanvas,
-    antialias: true,
-    alpha: true
-  });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
-  camera.position.set(26, 30, 32);
-
-  controls = new THREE.OrbitControls(camera, cityCanvas);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.055;
-  controls.minDistance = 12;
-  controls.maxDistance = 120;
-  controls.maxPolarAngle = Math.PI * 0.48;
-
-  const ambient = new THREE.AmbientLight(0xffffff, 0.55);
-  scene.add(ambient);
-
-  const key = new THREE.DirectionalLight(0xffffff, 0.8);
-  key.position.set(20, 40, 8);
-  scene.add(key);
-
-  const rim = new THREE.DirectionalLight(0x88ccff, 0.5);
-  rim.position.set(-20, 20, -20);
-  scene.add(rim);
-
-  cityGroup = new THREE.Group();
-  scene.add(cityGroup);
-
-  const animate = () => {
-    controls.update();
-    renderer.render(scene, camera);
-    cityAnimationHandle = requestAnimationFrame(animate);
-  };
-  animate();
-  updateCityCanvasSize();
-}
-
-function pseudoRandom(seed) {
-  const x = Math.sin(seed * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-function clearCityGroup() {
-  if (!cityGroup) return;
-  while (cityGroup.children.length) {
-    const child = cityGroup.children.pop();
-    if (child.geometry) child.geometry.dispose();
-    if (child.material) child.material.dispose();
-  }
-}
-
-function buildCityModel(dimension, variant) {
-  if (!window.THREE || !cityCanvas) {
-    return;
-  }
-  initThreeIfNeeded();
-  clearCityGroup();
-
-  const city = cityNames[(dimension - 1) % cityNames.length];
-  const modeNames = ["Neon Core", "Heritage Grid", "Future Vertical"];
-  cityTitle.textContent = `${city} - ${modeNames[variant]}`;
-
-  const baseHue = (dimension * 17 + variant * 51) % 360;
-  const primary = new THREE.Color(`hsl(${baseHue}, 80%, 55%)`);
-  const secondary = new THREE.Color(`hsl(${(baseHue + 55) % 360}, 75%, 48%)`);
-
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(58, 58, 1, 1),
-    new THREE.MeshStandardMaterial({
-      color: new THREE.Color(`hsl(${baseHue}, 38%, 14%)`),
-      roughness: 0.82,
-      metalness: 0.1
-    })
-  );
-  ground.rotation.x = -Math.PI / 2;
-  cityGroup.add(ground);
-
-  const gridSize = 11 + variant * 2;
-  const spacing = 3.8 - variant * 0.38;
-
-  for (let gx = -gridSize; gx <= gridSize; gx += 1) {
-    for (let gz = -gridSize; gz <= gridSize; gz += 1) {
-      const seed = dimension * 10000 + variant * 1000 + gx * 100 + gz;
-      const chance = pseudoRandom(seed);
-      if (chance < 0.42) continue;
-
-      const heightBase = 1.8 + pseudoRandom(seed + 1) * (8 + variant * 10);
-      const width = 1 + pseudoRandom(seed + 2) * (1.3 + variant * 0.4);
-      const depth = 1 + pseudoRandom(seed + 3) * (1.4 + variant * 0.35);
-      const x = gx * spacing + (pseudoRandom(seed + 4) - 0.5) * 0.4;
-      const z = gz * spacing + (pseudoRandom(seed + 5) - 0.5) * 0.4;
-
-      const col = chance > 0.84 ? primary.clone() : secondary.clone();
-      col.offsetHSL((pseudoRandom(seed + 6) - 0.5) * 0.1, 0, (pseudoRandom(seed + 7) - 0.5) * 0.12);
-
-      const building = new THREE.Mesh(
-        new THREE.BoxGeometry(width, heightBase, depth),
-        new THREE.MeshStandardMaterial({
-          color: col,
-          roughness: 0.38 + variant * 0.15,
-          metalness: 0.3 + variant * 0.2,
-          emissive: col.clone().multiplyScalar(0.08 + 0.05 * variant)
+planetDefs.forEach((def) => {
+  const material =
+    def.name === "Earth"
+      ? new THREE.MeshStandardMaterial({
+          map: earthTexture,
+          bumpMap: earthBump,
+          bumpScale: 0.3,
+          specularMap: earthSpec,
+          metalness: 0.03,
+          roughness: 0.7
         })
-      );
-      building.position.set(x, heightBase / 2, z);
-      cityGroup.add(building);
-    }
+      : new THREE.MeshStandardMaterial({
+          color: def.color,
+          roughness: 0.78,
+          metalness: 0.1
+        });
+
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(def.radius, 48, 48), material);
+  solarGroup.add(mesh);
+
+  if (def.name === "Earth") {
+    earth = mesh;
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(def.radius * 1.08, 36, 36),
+      new THREE.MeshBasicMaterial({ color: 0x65b7ff, transparent: true, opacity: 0.28 })
+    );
+    earth.add(glow);
+    cloudLayer = new THREE.Mesh(
+      new THREE.SphereGeometry(def.radius * 1.012, 36, 36),
+      new THREE.MeshStandardMaterial({ map: cloudTexture, transparent: true, opacity: 0.42 })
+    );
+    earth.add(cloudLayer);
   }
 
-  const halo = new THREE.Mesh(
-    new THREE.TorusGeometry(22 + variant * 2, 0.28 + variant * 0.05, 16, 160),
-    new THREE.MeshStandardMaterial({
-      color: primary,
-      emissive: primary.clone().multiplyScalar(0.45),
-      roughness: 0.22,
-      metalness: 0.88
-    })
-  );
-  halo.rotation.x = Math.PI / 2;
-  halo.position.y = 0.15;
-  cityGroup.add(halo);
+  planets.push({ ...def, mesh });
+});
 
-  cityButtons.forEach((btn) => {
-    btn.classList.toggle("btn-primary", Number.parseInt(btn.dataset.variant || "0", 10) === variant);
-  });
+const earthMarker = new THREE.Mesh(
+  new THREE.SphereGeometry(2.6, 18, 18),
+  new THREE.MeshBasicMaterial({ color: 0x5aa7ff, transparent: true, opacity: 0.95 })
+);
+scene.add(earthMarker);
+
+const earthTilt = THREE.MathUtils.degToRad(23.4);
+const cityPath = [
+  { name: "Tokyo", lat: 35.6762, lon: 139.6503 },
+  { name: "Delhi", lat: 28.6139, lon: 77.209 },
+  { name: "Dubai", lat: 25.2048, lon: 55.2708 },
+  { name: "Paris", lat: 48.8566, lon: 2.3522 },
+  { name: "London", lat: 51.5072, lon: -0.1276 },
+  { name: "New York", lat: 40.7128, lon: -74.006 },
+  { name: "Mexico City", lat: 19.4326, lon: -99.1332 },
+  { name: "Rio", lat: -22.9068, lon: -43.1729 },
+  { name: "Cape Town", lat: -33.9249, lon: 18.4241 },
+  { name: "Sydney", lat: -33.8688, lon: 151.2093 }
+];
+
+const state = {
+  start: performance.now(),
+  droneStart: 0
+};
+
+function planetPosition(def, t) {
+  const angle = t * def.speed + def.orbit * 0.01;
+  return new THREE.Vector3(Math.cos(angle) * def.orbit, 0, Math.sin(angle) * def.orbit);
 }
 
-function updateCityCanvasSize() {
-  if (!renderer || !camera || !cityCanvas) {
+function latLonToEarthVector(lat, lon, radius) {
+  const latR = THREE.MathUtils.degToRad(lat);
+  const lonR = THREE.MathUtils.degToRad(lon);
+  const x = radius * Math.cos(latR) * Math.cos(lonR);
+  const z = radius * Math.cos(latR) * Math.sin(lonR);
+  const y = radius * Math.sin(latR);
+  const v = new THREE.Vector3(x, y, z);
+  v.applyAxisAngle(new THREE.Vector3(0, 0, 1), earthTilt);
+  return v;
+}
+
+function updatePlanets(t) {
+  planets.forEach((p) => {
+    const pos = planetPosition(p, t);
+    p.mesh.position.copy(pos);
+    p.mesh.rotation.y += 0.002;
+  });
+  if (cloudLayer) {
+    cloudLayer.rotation.y += 0.0012;
+  }
+  if (earth) {
+    earth.rotation.z = earthTilt;
+  }
+}
+
+function lerpVec(a, b, t) {
+  return new THREE.Vector3(
+    THREE.MathUtils.lerp(a.x, b.x, t),
+    THREE.MathUtils.lerp(a.y, b.y, t),
+    THREE.MathUtils.lerp(a.z, b.z, t)
+  );
+}
+
+function setPhaseText(text) {
+  phaseLabel.textContent = text;
+}
+
+function updateCinematic(elapsedSec, simTime) {
+  updatePlanets(simTime);
+  const earthWorld = earth.getWorldPosition(new THREE.Vector3());
+  earthMarker.position.copy(earthWorld).multiplyScalar(1.02);
+  earthMarker.material.opacity = elapsedSec > 10 ? 0.8 : 0;
+
+  if (elapsedSec < 5) {
+    setPhaseText("Phase 1: Deep Space Signal");
+    const pulse = 1 + Math.sin(elapsedSec * 4.5) * 0.08;
+    sun.scale.setScalar(pulse);
+    camera.position.set(0, 0, 2200);
+    camera.lookAt(0, 0, 0);
+    hud.classList.add("hidden");
+    body.classList.remove("drone-mode");
     return;
   }
-  const rect = cityCanvas.getBoundingClientRect();
-  const width = Math.max(100, Math.floor(rect.width));
-  const height = Math.max(100, Math.floor(rect.height));
-  renderer.setSize(width, height, false);
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
+
+  if (elapsedSec < 18) {
+    setPhaseText("Phase 2: Approaching the Solar System");
+    const p = (elapsedSec - 5) / 13;
+    const eased = 1 - Math.pow(1 - p, 2.8);
+    camera.position.set(0, 120 * (1 - eased), THREE.MathUtils.lerp(2200, 520, eased));
+    camera.lookAt(0, 0, 0);
+    hud.classList.add("hidden");
+    body.classList.remove("drone-mode");
+    return;
+  }
+
+  if (elapsedSec < 30) {
+    setPhaseText("Phase 3: Earth Lock");
+    const p = (elapsedSec - 18) / 12;
+    const eased = 1 - Math.pow(1 - p, 2.2);
+    const from = new THREE.Vector3(0, 70, 500);
+    const to = earthWorld.clone().add(new THREE.Vector3(30, 16, 28));
+    const pos = lerpVec(from, to, eased);
+    camera.position.copy(pos);
+    camera.lookAt(earthWorld);
+    hud.classList.add("hidden");
+    body.classList.remove("drone-mode");
+    return;
+  }
+
+  if (!state.droneStart) {
+    state.droneStart = elapsedSec;
+  }
+  setPhaseText("Phase 4: Drone Flyover // Global Cities");
+  hud.classList.remove("hidden");
+  body.classList.add("drone-mode");
+
+  const droneElapsed = elapsedSec - state.droneStart;
+  const routeDuration = 56;
+  const normalized = (droneElapsed % routeDuration) / routeDuration;
+  const cityProgress = normalized * cityPath.length;
+  const i = Math.floor(cityProgress) % cityPath.length;
+  const next = (i + 1) % cityPath.length;
+  const localT = cityProgress - Math.floor(cityProgress);
+
+  const a = cityPath[i];
+  const b = cityPath[next];
+  const lat = THREE.MathUtils.lerp(a.lat, b.lat, localT);
+  const lon = THREE.MathUtils.lerp(a.lon, b.lon, localT);
+  const citySurface = latLonToEarthVector(lat, lon, 12.2).add(earthWorld);
+  const camOffset = citySurface.clone().sub(earthWorld).normalize().multiplyScalar(8.7);
+  const drift = new THREE.Vector3(
+    Math.sin(droneElapsed * 1.6) * 0.35,
+    Math.sin(droneElapsed * 1.1) * 0.25,
+    Math.cos(droneElapsed * 1.5) * 0.35
+  );
+
+  const camPos = citySurface.clone().add(camOffset).add(drift);
+  camera.position.copy(camPos);
+  camera.lookAt(citySurface);
+
+  cityLabel.textContent = `Target City: ${a.name}`;
+  const mins = Math.floor(droneElapsed / 60);
+  const secs = Math.floor(droneElapsed % 60);
+  timerLabel.textContent = `T+${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function animate() {
+  const now = performance.now();
+  const elapsedSec = (now - state.start) / 1000;
+  const simTime = elapsedSec * 12;
+  updateCinematic(elapsedSec, simTime);
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 
 window.addEventListener("resize", () => {
-  updateCityCanvasSize();
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-window.addEventListener("beforeunload", () => {
-  if (cityAnimationHandle) {
-    cancelAnimationFrame(cityAnimationHandle);
-  }
-});
+animate();

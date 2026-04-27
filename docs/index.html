@@ -3,123 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Krellixx | 100 Dimensions</title>
+    <title>Krellixx | Solar Descent</title>
     <meta
       name="description"
-      content="A profile game experience with 100 dimensions, puzzles, and visual worlds."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bangers&family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Creepster&family=Exo+2:wght@300;500;700&family=Fira+Code:wght@400;700&family=Great+Vibes&family=Inter:wght@300;500;700;900&family=JetBrains+Mono:wght@400;700&family=Lobster&family=Major+Mono+Display&family=Monoton&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;500;700&family=Pacifico&family=Playfair+Display:wght@500;700;900&family=Press+Start+2P&family=Rajdhani:wght@400;700&family=Righteous&family=Rubik+Glitch&family=Russo+One&family=Share+Tech+Mono&family=Space+Grotesk:wght@300;500;700&family=Teko:wght@400;700&family=Tilt+Neon&family=Unbounded:wght@300;500;700;900&display=swap"
-      rel="stylesheet"
+      content="Cinematic auto-journey from a distant spark to solar system to Earth drone flyover."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <canvas id="bgCanvas" aria-hidden="true"></canvas>
-
-    <main id="app" class="center">
-      <section class="panel active" id="introPanel">
-        <p class="eyebrow">PROFILE INITIATED</p>
-        <h1>Krellixx 100-Dimension Challenge</h1>
-        <p>
-          This is a profile turned into a game. Follow first, then unlock the portal.
-        </p>
-        <div class="actions">
-          <a
-            id="followLink"
-            class="btn btn-primary"
-            href="https://github.com/Krellixx?tab=followers"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Follow @Krellixx to unlock</a
-          >
-        </div>
-        <p class="small-note" id="followStatus">
-          After opening follow page, return here to auto-enter.
-        </p>
-      </section>
-
-      <section class="panel" id="guessPanel">
-        <p class="eyebrow">PUZZLE I</p>
-        <h2>Guess a number from 1 to 100</h2>
-        <p>Enter your guessed number. Final dimension will lock to this number.</p>
-        <label class="guess-label" for="guessInput">Your guess</label>
-        <input
-          class="guess-input"
-          id="guessInput"
-          type="number"
-          min="1"
-          max="100"
-          value="8"
-          inputmode="numeric"
-        />
-        <p class="small-note" id="guessFeedback"></p>
-        <div class="actions">
-          <button class="btn btn-primary" id="readyBtn" type="button">Lock my number</button>
-        </div>
-      </section>
-
-      <section class="panel" id="calcPanel">
-        <p class="eyebrow">PUZZLE II</p>
-        <h2>Quick calculation ritual</h2>
-        <ol class="ritual">
-          <li>Double your number</li>
-          <li>Add 10</li>
-          <li>Divide by 2</li>
-          <li>Subtract your original number</li>
-        </ol>
-        <p class="big-highlight">Your result is always: 5</p>
-        <div class="actions">
-          <button class="btn btn-primary" id="toSpinnerBtn" type="button">
-            Enter Number Stream
-          </button>
-        </div>
-      </section>
-
-      <section class="panel" id="spinnerPanel">
-        <p class="eyebrow">PHASE SHIFT</p>
-        <h2>Stop the stream at your destiny number</h2>
-        <div class="stream-wrap">
-          <p class="stream-number" id="streamNumber">1</p>
-        </div>
-        <p id="spinnerHint">Press stop at the perfect moment.</p>
-        <div class="actions">
-          <button class="btn btn-danger" id="stopBtn" type="button">STOP</button>
-        </div>
-      </section>
-
-      <section class="panel dimension" id="dimensionPanel">
-        <p class="eyebrow" id="dimensionEyebrow">DIMENSION LOCKED</p>
-        <h2 id="dimensionTitle">Dimension 1</h2>
-        <p id="dimensionText"></p>
-        <div class="meta-grid" id="dimensionMeta"></div>
-
-        <div class="city-block">
-          <h3>City Worlds (3 Modes)</h3>
-          <p class="small-note">
-            Drag to rotate. Scroll to zoom. Right-drag to pan.
-          </p>
-          <div class="city-actions">
-            <button class="btn city-btn" type="button" data-variant="0">Model A</button>
-            <button class="btn city-btn" type="button" data-variant="1">Model B</button>
-            <button class="btn city-btn" type="button" data-variant="2">Model C</button>
-          </div>
-          <p id="cityTitle"></p>
-          <div class="city-canvas-wrap">
-            <canvas id="cityCanvas" aria-label="3D city model"></canvas>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" id="againBtn" type="button">Play again</button>
-        </div>
-      </section>
-    </main>
+    <canvas id="spaceCanvas" aria-label="Solar system cinematic"></canvas>
+    <div id="overlay">
+      <div id="title">KRELLIXX // SOLAR DESCENT</div>
+      <div id="phaseLabel">Phase 1: Deep Space Signal</div>
+      <div id="hud" class="hidden">
+        <div>DRONE CAM // EARTH RECON</div>
+        <div id="cityLabel">Target City: --</div>
+        <div id="timerLabel">T+00:00</div>
+      </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
