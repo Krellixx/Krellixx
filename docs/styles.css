@@ -5,13 +5,12 @@
 html,
 body {
   margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
   background: #000;
-  color: #e8f3ff;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: #d8efff;
+  font-family: "Segoe UI", Roboto, Inter, sans-serif;
 }
 
 #spaceCanvas {
@@ -22,70 +21,99 @@ body {
   display: block;
 }
 
-#overlay {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  right: 1rem;
-  z-index: 5;
-  pointer-events: none;
-  text-shadow: 0 0 8px #000;
-}
-
-#title {
-  font-size: clamp(0.85rem, 1.4vw, 1.05rem);
-  letter-spacing: 0.18em;
-  opacity: 0.95;
-}
-
-#phaseLabel {
-  margin-top: 0.4rem;
-  font-size: clamp(0.8rem, 1.3vw, 0.98rem);
-  opacity: 0.88;
-}
-
 #hud {
   position: fixed;
-  left: 1rem;
-  bottom: 1rem;
-  border: 1px solid #57d1ff8a;
-  padding: 0.65rem 0.75rem;
-  border-radius: 10px;
-  background: #02192370;
-  color: #baf1ff;
-  font-family: "Consolas", "Courier New", monospace;
-  font-size: 0.8rem;
-  line-height: 1.45;
+  left: 2.5vw;
+  bottom: 3.5vh;
+  z-index: 5;
+  max-width: min(70ch, 82vw);
+  text-shadow: 0 0 18px #4fc9ff50;
 }
 
-#hud.hidden {
-  display: none;
+#status {
+  font-size: clamp(0.95rem, 1.7vw, 1.25rem);
+  letter-spacing: 0.03em;
 }
 
-body.drone-mode::before {
-  content: "";
+#subStatus {
+  margin-top: 0.3rem;
+  font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+  opacity: 0.8;
+}
+
+#droneOverlay {
+  pointer-events: none;
   position: fixed;
   inset: 0;
-  pointer-events: none;
-  border: 2px solid #7ce8ff3f;
-  box-shadow: inset 0 0 0 1px #7ce8ff30, inset 0 0 80px #0a2f4d66;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 700ms ease;
 }
 
-body.drone-mode::after {
-  content: "";
-  position: fixed;
+#droneOverlay.active {
+  opacity: 1;
+}
+
+.corner {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  border: 2px solid #6ed6ff99;
+}
+
+.tl {
+  top: 2.2vh;
+  left: 1.3vw;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.tr {
+  top: 2.2vh;
+  right: 1.3vw;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.bl {
+  bottom: 2.2vh;
+  left: 1.3vw;
+  border-right: 0;
+  border-top: 0;
+}
+
+.br {
+  bottom: 2.2vh;
+  right: 1.3vw;
+  border-left: 0;
+  border-top: 0;
+}
+
+.scan {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #7fe2ffb5, transparent);
+  animation: sweep 5s linear infinite;
+}
+
+.telemetry {
+  position: absolute;
+  top: 2.8vh;
   left: 50%;
-  top: 50%;
-  width: 26px;
-  height: 26px;
-  margin-left: -13px;
-  margin-top: -13px;
-  border: 1px solid #97f6ffb0;
-  border-radius: 50%;
-  box-shadow: 0 0 18px #6de2ff8f;
-  pointer-events: none;
+  transform: translateX(-50%);
+  font-size: clamp(0.58rem, 0.85vw, 0.78rem);
+  letter-spacing: 0.28em;
+  color: #9edfff;
+  text-shadow: 0 0 10px #6acfff66;
 }
 
-.hidden {
-  display: none !important;
+@keyframes sweep {
+  from {
+    top: 6%;
+  }
+  to {
+    top: 94%;
+  }
 }

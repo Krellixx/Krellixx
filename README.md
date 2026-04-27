@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>This is not a profile. This is a portal.</b><br/>
-  Enter a cinematic full-screen journey from deep space to Earth.
+  Enter a cinematic deep-space journey from a distant signal to Earth drone flyover.
 </p>
 
 <p align="center">
@@ -22,10 +22,11 @@
 
 ## What happens inside?
 
-- Phase 1: Tiny orange star in deep black space.
-- Phase 2: Automatic cinematic zoom into the solar system.
-- Phase 3: Earth lock-on with realistic 3D globe rendering.
-- Phase 4: Drone-style HUD flyover across major world cities.
+- Phase 1: A black void with one tiny distant orange light.
+- Phase 2: Auto zoom after 5 seconds into the revealed solar system.
+- Phase 3: A tiny blue Earth signal appears and the camera tracks it.
+- Phase 4: Camera approaches Earth, then transitions to triple-Earth cinematic.
+- Phase 5: Drone-style automated flyover sequence in fullscreen.
 
 ---
 
