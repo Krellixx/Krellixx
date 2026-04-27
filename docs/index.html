@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Krellixx | 100 Dimensions</title>
+    <meta
+      name="description"
+      content="A profile game experience with 100 dimensions, puzzles, and visual worlds."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bangers&family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Creepster&family=Exo+2:wght@300;500;700&family=Fira+Code:wght@400;700&family=Great+Vibes&family=Inter:wght@300;500;700;900&family=JetBrains+Mono:wght@400;700&family=Lobster&family=Major+Mono+Display&family=Monoton&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;500;700&family=Pacifico&family=Playfair+Display:wght@500;700;900&family=Press+Start+2P&family=Rajdhani:wght@400;700&family=Righteous&family=Rubik+Glitch&family=Russo+One&family=Share+Tech+Mono&family=Space+Grotesk:wght@300;500;700&family=Teko:wght@400;700&family=Tilt+Neon&family=Unbounded:wght@300;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+    <main id="app" class="center">
+      <section class="panel active" id="introPanel">
+        <p class="eyebrow">PROFILE INITIATED</p>
+        <h1>Krellixx 100-Dimension Challenge</h1>
+        <p>
+          This is a profile turned into a game. Follow first, then unlock the portal.
+        </p>
+        <div class="actions">
+          <a
+            class="btn btn-primary"
+            href="https://github.com/Krellixx?tab=followers"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Follow @Krellixx</a
+          >
+          <button class="btn" id="followedBtn" type="button">I followed. Continue</button>
+        </div>
+      </section>
+
+      <section class="panel" id="guessPanel">
+        <p class="eyebrow">PUZZLE I</p>
+        <h2>Guess a number from 1 to 100</h2>
+        <p>Keep the number in your mind. Do not tell anyone.</p>
+        <div class="actions">
+          <button class="btn btn-primary" id="readyBtn" type="button">I have a number</button>
+        </div>
+      </section>
+
+      <section class="panel" id="calcPanel">
+        <p class="eyebrow">PUZZLE II</p>
+        <h2>Quick calculation ritual</h2>
+        <ol class="ritual">
+          <li>Double your number</li>
+          <li>Add 10</li>
+          <li>Divide by 2</li>
+          <li>Subtract your original number</li>
+        </ol>
+        <p class="big-highlight">Your result is always: 5</p>
+        <div class="actions">
+          <button class="btn btn-primary" id="toSpinnerBtn" type="button">
+            Enter Number Stream
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" id="spinnerPanel">
+        <p class="eyebrow">PHASE SHIFT</p>
+        <h2>Stop the stream at your destiny number</h2>
+        <div class="stream-wrap">
+          <p class="stream-number" id="streamNumber">1</p>
+        </div>
+        <p id="spinnerHint">Press stop at the perfect moment.</p>
+        <div class="actions">
+          <button class="btn btn-danger" id="stopBtn" type="button">STOP</button>
+        </div>
+      </section>
+
+      <section class="panel dimension" id="dimensionPanel">
+        <p class="eyebrow" id="dimensionEyebrow">DIMENSION LOCKED</p>
+        <h2 id="dimensionTitle">Dimension 1</h2>
+        <p id="dimensionText"></p>
+        <div class="meta-grid" id="dimensionMeta"></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="againBtn" type="button">Play again</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
