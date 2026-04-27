@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/badge/STEP%201-Follow%20@Krellixx-ff2e63?style=for-the-badge&logo=github" alt="Follow Krellixx"/>
   </a>
   <a href="https://krellixx.github.io/Krellixx/">
-    <img src="https://img.shields.io/badge/STEP%202-Launch%20Solar%20Descent-08d9d6?style=for-the-badge&logo=vercel" alt="Launch Krellixx Descent"/>
+    <img src="https://img.shields.io/badge/STEP%202-Launch%20Krellixx%20Descent-08d9d6?style=for-the-badge&logo=vercel" alt="Launch Krellixx Descent"/>
   </a>
 </p>
 
