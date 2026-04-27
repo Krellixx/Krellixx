@@ -28,22 +28,36 @@
         </p>
         <div class="actions">
           <a
+            id="followLink"
             class="btn btn-primary"
             href="https://github.com/Krellixx?tab=followers"
             target="_blank"
             rel="noopener noreferrer"
-            >Follow @Krellixx</a
+            >Follow @Krellixx to unlock</a
           >
-          <button class="btn" id="followedBtn" type="button">I followed. Continue</button>
         </div>
+        <p class="small-note" id="followStatus">
+          After opening follow page, return here to auto-enter.
+        </p>
       </section>
 
       <section class="panel" id="guessPanel">
         <p class="eyebrow">PUZZLE I</p>
         <h2>Guess a number from 1 to 100</h2>
-        <p>Keep the number in your mind. Do not tell anyone.</p>
+        <p>Enter your guessed number. Final dimension will lock to this number.</p>
+        <label class="guess-label" for="guessInput">Your guess</label>
+        <input
+          class="guess-input"
+          id="guessInput"
+          type="number"
+          min="1"
+          max="100"
+          value="8"
+          inputmode="numeric"
+        />
+        <p class="small-note" id="guessFeedback"></p>
         <div class="actions">
-          <button class="btn btn-primary" id="readyBtn" type="button">I have a number</button>
+          <button class="btn btn-primary" id="readyBtn" type="button">Lock my number</button>
         </div>
       </section>
 
@@ -81,12 +95,31 @@
         <h2 id="dimensionTitle">Dimension 1</h2>
         <p id="dimensionText"></p>
         <div class="meta-grid" id="dimensionMeta"></div>
+
+        <div class="city-block">
+          <h3>City Worlds (3 Modes)</h3>
+          <p class="small-note">
+            Drag to rotate. Scroll to zoom. Right-drag to pan.
+          </p>
+          <div class="city-actions">
+            <button class="btn city-btn" type="button" data-variant="0">Model A</button>
+            <button class="btn city-btn" type="button" data-variant="1">Model B</button>
+            <button class="btn city-btn" type="button" data-variant="2">Model C</button>
+          </div>
+          <p id="cityTitle"></p>
+          <div class="city-canvas-wrap">
+            <canvas id="cityCanvas" aria-label="3D city model"></canvas>
+          </div>
+        </div>
+
         <div class="actions">
           <button class="btn btn-primary" id="againBtn" type="button">Play again</button>
         </div>
       </section>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

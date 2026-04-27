@@ -88,6 +88,29 @@ li {
   color: var(--accent);
 }
 
+.small-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  opacity: 0.82;
+}
+
+.guess-label {
+  display: inline-block;
+  margin: 0.35rem 0;
+  font-size: 0.92rem;
+}
+
+.guess-input {
+  display: block;
+  width: min(220px, 100%);
+  border-radius: 12px;
+  border: 1px solid #ffffff3a;
+  background: #ffffff12;
+  color: var(--text);
+  padding: 0.6rem 0.7rem;
+  font-size: 1rem;
+}
+
 .actions {
   margin-top: 1rem;
   display: flex;
@@ -160,6 +183,49 @@ li {
 .meta-item b {
   display: block;
   margin-bottom: 0.2rem;
+}
+
+.city-block {
+  margin-top: 1.1rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid #ffffff26;
+  background: #ffffff0f;
+}
+
+.city-block h3 {
+  margin: 0;
+}
+
+.city-actions {
+  margin: 0.65rem 0 0.5rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.city-btn {
+  padding: 0.5rem 0.9rem;
+}
+
+#cityTitle {
+  margin: 0.45rem 0 0.7rem;
+  font-weight: 700;
+}
+
+.city-canvas-wrap {
+  width: 100%;
+  height: min(48vw, 320px);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ffffff29;
+  background: #05070f;
+}
+
+#cityCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 @keyframes panelIn {
