@@ -22,31 +22,6 @@ body {
   display: block;
 }
 
-#letterboxTop,
-#letterboxBottom {
-  position: fixed;
-  left: 0;
-  width: 100%;
-  height: 0;
-  background: #000;
-  z-index: 6;
-  pointer-events: none;
-  transition: height 900ms ease;
-}
-
-#letterboxTop {
-  top: 0;
-}
-
-#letterboxBottom {
-  bottom: 0;
-}
-
-body.letterbox #letterboxTop,
-body.letterbox #letterboxBottom {
-  height: 9vh;
-}
-
 #overlay {
   position: fixed;
   top: 1rem;
@@ -109,25 +84,6 @@ body.drone-mode::after {
   border-radius: 50%;
   box-shadow: 0 0 18px #6de2ff8f;
   pointer-events: none;
-}
-
-#interactiveBtn {
-  pointer-events: auto;
-  margin-top: 1rem;
-  border: 1px solid #96e8ff99;
-  border-radius: 999px;
-  background: #021f2fcd;
-  color: #d5f8ff;
-  padding: 0.58rem 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 0 20px #4ed7ff50;
-}
-
-#helpTip {
-  margin-top: 0.7rem;
-  font-size: 0.85rem;
-  opacity: 0.92;
 }
 
 .hidden {

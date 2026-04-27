@@ -12,22 +12,17 @@
   </head>
   <body>
     <canvas id="spaceCanvas" aria-label="Solar system cinematic"></canvas>
-    <div id="letterboxTop"></div>
-    <div id="letterboxBottom"></div>
     <div id="overlay">
       <div id="title">KRELLIXX // SOLAR DESCENT</div>
       <div id="phaseLabel">Phase 1: Deep Space Signal</div>
       <div id="hud" class="hidden">
-        <div>DRONE CAM // ATMOSPHERE ENTRY</div>
-        <div id="cityLabel">Target Zone: --</div>
+        <div>DRONE CAM // EARTH RECON</div>
+        <div id="cityLabel">Target City: --</div>
         <div id="timerLabel">T+00:00</div>
       </div>
-      <button id="interactiveBtn" class="hidden" type="button">Enable Sound + Enter Interactive Mode</button>
-      <div id="helpTip" class="hidden">Drag to orbit, scroll to zoom, click glowing markers to open repositories.</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
